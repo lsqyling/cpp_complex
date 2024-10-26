@@ -32,6 +32,7 @@ add_subdirectory(professional_cpp)
 add_subdirectory(cpp20_advanced_programing)
 add_subdirectory(cpp_core_guide_lines)
 add_subdirectory(vcpkg_lib_apply)
+add_subdirectory(concurrency)
 
 #install dir
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_LIST_DIR}/install)
