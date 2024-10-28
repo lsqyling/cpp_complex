@@ -1,22 +1,9 @@
-# generate target
-file(GLOB src_list RELATIVE ${CMAKE_CURRENT_LIST_DIR} *.cpp)
+file(GLOB_RECURSE src_list LIST_DIRECTORIES false
+        CONFIGURE_DEPENDS *.cpp
+)
 
-set(target_list)
-
-
-foreach (_v ${src_list})
-    if (_v MATCHES _test.cpp)
-        string(REPLACE .cpp "" _name ${_v})
-        string(PREPEND _name "cpp_core_guide_lines_")
-
-        list(APPEND target_list ${_name})
-        add_executable(${_name} ${_v})
-    endif ()
+foreach (v_ ${src_list})
+    get_filename_component(target_name ${v_} NAME_WE)
+    add_executable("core_guide_${target_name}" ${v_})
 endforeach ()
-
-install(TARGETS ${target_list}
-ARCHIVE DESTINATION lib
-RUNTIME DESTINATION bin
-LIBRARY DESTINATION bin)
-
-unset(target_list)
+unset(src_list)

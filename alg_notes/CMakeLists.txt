@@ -1,17 +1,13 @@
 
+file(GLOB_RECURSE src_list LIST_DIRECTORIES false
+        CONFIGURE_DEPENDS *.cpp
+)
 
-file(GLOB src_list RELATIVE ${CMAKE_CURRENT_LIST_DIR} *.cpp)
-set(targets)
-foreach (_v ${src_list})
-    string(REPLACE .cpp "" _name ${_v})
-    string(PREPEND _name "alg_notes_")
-
-    if (${_name} MATCHES chapter OR ${_name} MATCHES _test)
-        add_executable(${_name} ${_v})
-        list(APPEND targets ${_name})
-    endif ()
+foreach (v_ ${src_list})
+    get_better_target_name(target_name ${v_})
+    add_executable("${target_name}" ${v_})
 endforeach ()
 
-install(TARGETS ${targets}
-DESTINATION bin)
+unset(src_list)
+
 

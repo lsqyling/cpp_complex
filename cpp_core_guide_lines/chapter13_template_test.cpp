@@ -13,6 +13,7 @@ public:
         sum += x;
     }
 
+    [[nodiscard]]
     int get_sum() const { return sum; }
 
 private:
@@ -40,7 +41,7 @@ void show_me_func(const T &t)
 template<typename T>
 struct show_me_t
 {
-    show_me_t(const T &t)
+    explicit show_me_t(const T &t)
     {
         std::cout << t << '\n';
     }

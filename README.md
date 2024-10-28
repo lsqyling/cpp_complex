@@ -32,12 +32,6 @@
 ### 总结：详解c++20的概念约束，协程，Ranges，模块等新特征
 重点讲述库，框架开发的高级编程技术。
 
-## vcpkg 的使用
-### vcpkg | visual studio | cmake
-> - 项目结构： cpp_complex/vcpkg_lib_apply
-> - 1. vcpkg 安装与使用
-
-
 ## c++20 并发编程
 ### c++20 | concurrency | action
 > - 项目结构：cpp_complex/concurrency

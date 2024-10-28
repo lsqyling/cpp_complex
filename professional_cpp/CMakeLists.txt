@@ -1,36 +1,30 @@
-# generate target
-file(GLOB_RECURSE src_list
-        LIST_DIRECTORIES false
-        RELATIVE ${CMAKE_CURRENT_LIST_DIR}
-        *.cpp *.h)
 
-set(target_src_list)
-foreach (_v ${src_list})
-    if (NOT _v MATCHES _test.cpp AND NOT _v MATCHES chapter AND NOT _v MATCHES include)
-        list(APPEND target_src_list ${CMAKE_CURRENT_LIST_DIR}/${_v})
+set(lib_src
+        airline_ticket.cpp
+        bank.cpp
+        data_base.cpp
+        employee.cpp
+        logger.cpp
+        spread_sheet.cpp)
+
+add_library(common
+        SHARED
+        ${lib_src}
+)
+
+file(GLOB_RECURSE src_list LIST_DIRECTORIES false
+        CONFIGURE_DEPENDS chapter*.cpp *test.cpp
+)
+
+foreach (v_ ${src_list})
+    get_filename_component(target_name ${v_} NAME_WE)
+    if (${target_name} MATCHES "test")
+        add_executable(${target_name} ${v_})
+        target_link_libraries(${target_name} PRIVATE common)
+    else ()
+        add_executable(${target_name} ${v_})
     endif ()
 endforeach ()
-
-
-
-
-foreach (_v ${src_list})
-    if (_v MATCHES _test.cpp)
-        string(REPLACE .cpp "" _name ${_v})
-        add_executable(${_name} ${CMAKE_CURRENT_LIST_DIR}/${_v} ${target_src_list})
-    endif ()
-    if (_v MATCHES chapter)
-        string(REPLACE .cpp "" _name ${_v})
-        add_executable(${_name} ${CMAKE_CURRENT_LIST_DIR}/${_v} ${target_src_list})
-        if (_v MATCHES multi_thread)
-            target_link_directories(${_name}
-            PRIVATE
-            Threads::Threads)
-        endif ()
-    endif ()
-endforeach ()
-
-unset(target_src_list)
-
+unset(src_list)
 
 

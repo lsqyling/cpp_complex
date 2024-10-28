@@ -1,5 +1,7 @@
-#include <co_context/all.hpp>
 #include <iostream>
+#ifdef HAS_CO_CONTEXT
+
+#include <co_context/all.hpp>
 #include <random>
 
 using std::cout;
@@ -257,21 +259,7 @@ void test_cycle()
     ctx.start();
     ctx.join();
 }
-
-
-
-
-
-
-
-
-
 }
-
-
-
-
-
 
 
 int main()
@@ -287,3 +275,14 @@ int main()
 
     return 0;
 }
+
+#else
+
+int main()
+{
+    std::cout << "co_context missing!" << std::endl;
+
+    return 0;
+}
+
+#endif

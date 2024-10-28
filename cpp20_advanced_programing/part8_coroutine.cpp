@@ -1,5 +1,6 @@
-#include <co_context/all.hpp>
 #include <iostream>
+#ifdef HAS_CO_CONTEXT
+#include <co_context/all.hpp>
 
 
 co_context::generator<int> gen_iota(int x)
@@ -34,6 +35,7 @@ public:
 
     struct promise_type
     {
+        [[nodiscard]]
         constexpr std::suspend_never initial_suspend() const { return {}; }
         constexpr std::suspend_never final_suspend() noexcept { return {}; }
         constexpr generator<T> get_return_object()
@@ -83,22 +85,6 @@ void test_gen_fib()
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -109,3 +95,13 @@ int main()
     coroutine::test_gen_fib();
     return 0;
 }
+
+#else
+int main()
+{
+    std::cout << "co_context missing!" << std::endl;
+
+    return 0;
+}
+
+#endif

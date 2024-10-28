@@ -13,7 +13,5 @@ int main(int argc, char **argv)
     mysinglton *ptr = glob.get();
     glob.delete_();
 
-
-
     return 0;
 }

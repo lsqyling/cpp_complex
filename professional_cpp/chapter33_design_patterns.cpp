@@ -2,7 +2,8 @@
 #include <fstream>
 #include <random>
 #include "format.h"
-
+#include <memory>
+#include <chrono>
 
 using std::cout;
 using std::endl;
@@ -38,10 +39,13 @@ public:
     void log(std::string_view msg, LogLevel level) override;
 
 private:
-    std::string get_log_level_string(LogLevel log_level) const;
+    [[nodiscard]]
+    static std::string get_log_level_string(LogLevel log_level);
+
+
 
     std::ofstream m_output;
-    LogLevel m_log_level;
+    LogLevel m_log_level{LogLevel::Debug};
 };
 
 void logger::set_log_level(ilogger::LogLevel level)
@@ -65,7 +69,7 @@ logger::logger(std::string_view log_filename)
         throw std::runtime_error("Unable to initialize the logger!");
 }
 
-std::string logger::get_log_level_string(ilogger::LogLevel log_level) const
+std::string logger::get_log_level_string(ilogger::LogLevel log_level)
 {
     switch (log_level)
     {
@@ -115,6 +119,7 @@ class icar
 {
 public:
     virtual ~icar() = default;
+    [[nodiscard]]
     virtual std::string info() const = 0;
 };
 
@@ -124,6 +129,7 @@ class ford : public icar
 class ford_sedan : public ford
 {
 public:
+    [[nodiscard]]
     std::string info() const override
     {
         return "Ford Sedan";
@@ -133,6 +139,7 @@ public:
 class ford_suv : public ford
 {
 public:
+    [[nodiscard]]
     std::string info() const override
     {
         return "Ford SUV";
@@ -146,6 +153,7 @@ class toyota : public icar
 class toyota_sedan : public toyota
 {
 public:
+    [[nodiscard]]
     std::string info() const override
     {
         return "Toyota Sedan";
@@ -155,6 +163,7 @@ public:
 class toyota_suv : public toyota
 {
 public:
+    [[nodiscard]]
     std::string info() const override
     {
         return "Toyota SUV";
@@ -220,12 +229,14 @@ class icar
 {
 public:
     virtual ~icar() = default;
+    [[nodiscard]]
     virtual std::string info() const = 0;
 };
 
 class ford : public icar
 {
 public:
+    [[nodiscard]]
     std::string info() const override
     {
         return "Ford";
@@ -235,6 +246,7 @@ public:
 class toyota : public icar
 {
 public:
+    [[nodiscard]]
     std::string info() const override
     {
         return "Toyota";
@@ -323,15 +335,19 @@ namespace proxy {
  {
  public:
      virtual ~iplay() = default;
+     [[nodiscard]]
      virtual std::string get_name() const = 0;
+     [[nodiscard]]
      virtual std::string send_instant_msg(std::string_view msg) const = 0;
  };
 
  class play : public iplay
  {
  public:
+     [[nodiscard]]
      std::string get_name() const override;
 
+     [[nodiscard]]
      std::string send_instant_msg(std::string_view msg) const override;
  };
 
@@ -349,13 +365,16 @@ std::string play::send_instant_msg(std::string_view msg) const
 class play_proxy : public iplay
 {
 public:
-    play_proxy(std::unique_ptr<iplay> player);
+    explicit play_proxy(std::unique_ptr<iplay> player);
+    [[nodiscard]]
     std::string get_name() const override;
 
+    [[nodiscard]]
     std::string send_instant_msg(std::string_view msg) const override;
 private:
 
-    bool has_network_connectivity() const;
+    [[nodiscard]]
+    static bool has_network_connectivity();
 
     std::unique_ptr<iplay> m_player;
 };
@@ -382,7 +401,7 @@ namespace details {
 int get_random_num(int left, int right)
 {
     std::random_device seeder;
-    auto seed = seeder.entropy() != 0 ? seeder() : std::time(nullptr);
+    auto seed = seeder.entropy() != 0 ? seeder() : std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 engine(seed);
     std::uniform_int_distribution<int> u(left, right);
     return u(engine);
@@ -390,10 +409,10 @@ int get_random_num(int left, int right)
 }
 
 
-bool play_proxy::has_network_connectivity() const
+bool play_proxy::has_network_connectivity()
 {
     std::random_device seeder;
-    auto seed = seeder.entropy() != 0 ? seeder() : std::time(nullptr);
+    auto seed = seeder.entropy() != 0 ? seeder() : std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 engine(seed);
     std::uniform_int_distribution<int> u{1, 99};
     return u(engine) % 2 == 1;
