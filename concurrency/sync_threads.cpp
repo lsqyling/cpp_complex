@@ -3,11 +3,11 @@
 //
 #include <mutex>
 #include <thread>
-#include <condition_variable>
 #include <iostream>
 #include <format>
 #include <chrono>
 #include <queue>
+#include <future>
 
 using namespace std::chrono_literals;
 
@@ -96,7 +96,6 @@ public:
     }
 
 
-
 private:
     mutable std::mutex m_mut;
     std::condition_variable m_condi;
@@ -133,6 +132,56 @@ void test_queue_threadsafe()
 }
 }
 
+namespace future_op {
+
+int task(int n)
+{
+    std::cout << "异步任务 ID: " << std::this_thread::get_id() << std::endl;
+    return n * n;
+}
+
+void test_future()
+{
+    auto fut = std::async(task, 100);
+    std::cout << "current ID: " << std::this_thread::get_id() << std::endl;
+    std::cout << std::format("future.valid = {}\n", fut.valid());
+    std::cout << std::format("future.get() = {}\n", fut.get());
+    std::cout << std::format("future.valid = {}\n", fut.valid());
+}
+
+struct X
+{
+    int operator()(int n) const
+    {
+        return n * n;
+    }
+};
+
+struct Y
+{
+    [[nodiscard]]
+    int fy(int n) const
+    {
+        return n * n;
+    }
+};
+
+void f(int &p)
+{
+    std::cout << std::format("&p = {:p}\n", reinterpret_cast<void *>(&p));
+}
+
+void test_async()
+{
+    Y y;
+    int n = 10;
+    auto fut0 = std::async(X{}, 10);
+    auto fut1 = std::async(&Y::fy, y, 10);
+    auto fut2 = std::async([] {});
+    auto fut3 = std::async(f, std::ref(n));
+    std::cout << std::format("&n = {:p}\n", reinterpret_cast<void *>(&n));
+}
+}
 
 
 
@@ -141,7 +190,8 @@ void test_queue_threadsafe()
 int main()
 {
     sync_op::test_queue_threadsafe();
-
+    future_op::test_future();
+    future_op::test_async();
 
 
     return 0;

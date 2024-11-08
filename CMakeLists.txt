@@ -39,7 +39,6 @@ function(get_better_target_name out path)
     set(${out} ${rest} PARENT_SCOPE)
 endfunction()
 
-
 add_subdirectory(alg_notes)
 add_subdirectory(concurrency)
 add_subdirectory(cpp20_advanced_programing)
